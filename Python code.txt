@@ -1,0 +1,65 @@
+from selenium import webdriver
+
+from selenium.common.exceptionsimportNoSuchElementException
+
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+
+options.headless = True
+
+b = webdriver.Chrome(options = options)
+
+url = "file:///C:/Users/NK/Desktop/Edited__Webcrawler%20Website/node%201.html"
+b.get(url)
+
+from IPython.core.display import display, Image
+
+
+
+from graphviz import Digraph
+
+b.set_window_size(600,500)
+
+def visit_page(url):
+    b.get(url)
+    
+    b.save_screenshot("screen.png")
+    display(Image("screen.png"))
+    links = b.find_elements_by_tag_name("a")
+    return [link.get_attribute("href") for link in links]
+    
+ 
+visit_page(url)
+
+
+start_url = "file:///C:/Users/NK/Desktop/Edited__Webcrawler%20Website/node%201.html"
+todo = [start_url]
+added = set(todo)
+
+    
+gv = Digraph(engine="neato")
+
+def visit_next():
+    
+    #1 do the first thing on the list   
+   url = todo.pop(0)
+   gv.node(url)
+    
+   children_urls = visit_page(url)
+    
+    
+    #2 add new things to the end on the list
+    
+   for child_url in children_urls:
+        if not child_url in added:
+         todo.append(child_url)
+         added.add(child_url)
+        
+   display(gv)
+   print (todo)
+    
+while len(todo) > 0:
+    visit_next()
+    
+    
